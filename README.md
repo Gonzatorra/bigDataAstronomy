@@ -1,6 +1,7 @@
-Hay que hacer una query en el siguiente link:
+To take the data you have to enter the followuing link:
 https://skyserver.sdss.org/CasJobs/SubmitJob.aspx
 
+and create this query:
 SELECT objID, ra, dec, type,  
        petroRad_u, petroRad_g, petroRad_r, petroRad_i, petroRad_z,  
        modelMag_u, modelMag_g, modelMag_r, modelMag_i, modelMag_z,  
