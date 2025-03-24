@@ -2,12 +2,16 @@ import pandas as pd
 import requests
 import os
 
+path = "/home/haizeagonzalez/bigDataProject/primaryObjs.csv"
+path2 = "/home/haizeagonzalez/myproject/primaryObjs.csv"
+path3 = "/home/haizeagonzalez/myproject/primaryObjs2.csv"
+
 # Crear carpeta para guardar imágenes
 if not os.path.exists("images"):
     os.makedirs("images")
 
 # Cargar el dataset descargado de SDSS
-df = pd.read_csv("sdss_galaxies.csv")  # Asegúrate de que el archivo está en la misma carpeta del script
+df = pd.read_csv(path2)  # Asegúrate de que el archivo está en la misma carpeta del script
 
 # Función para descargar imágenes de SDSS
 def download_sdss_image(ra, dec, objID):
