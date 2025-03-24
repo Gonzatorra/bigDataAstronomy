@@ -7,7 +7,7 @@ path2 = "/home/haizeagonzalez/myproject/primaryObjs.csv"
 path3 = "/home/haizeagonzalez/myproject/primaryObjs2.csv"
 
 # Crear carpeta para guardar imágenes
-if not os.path.exists("images"):
+if not os.path.exists("/home/haizeagonzalez/myproject/images"):
     os.makedirs("images")
 
 # Cargar el dataset descargado de SDSS
