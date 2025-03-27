@@ -2,37 +2,36 @@ import requests
 import os
 import pandas as pd
 import random
+import config
 
-# Cargar el CSV
-csv_path = "/home/haizeagonzalez/myproject/primaryObjs.csv"  # Reemplaza con el nombre correcto
-df = pd.read_csv(csv_path, dtype={"objID": str})  # Cargar el CSV sin filtros
-df = df[['objID', 'ra', 'dec', 'type']]
+#Get the CSV
+csv_path = config.DATA_PATH
+df = pd.read_csv(csv_path, dtype={"objID": str}) #We must change the objID into string to download correctly the images
+df = df[['objID', 'ra', 'dec', 'type']] #Get just the necessary columns
 
-df['objID'] = df['objID'].astype(str)  # Convertir 'objID' a string
-df['ra'] = df['ra'].astype(str)  # Convertir 'ra' a float
-df['dec'] = df['dec'].astype(str)  # Convertir 'dec' a float
-df['type'] = df['type'].astype(int)  # Convertir 'dec' a float
+df['objID'] = df['objID'].astype(str) #Ensure that the ID is a string
+df['ra'] = df['ra'].astype(str)
+df['dec'] = df['dec'].astype(str)
+df['type'] = df['type'].astype(int)
 
-# Dividir en 80% entrenamiento y 20% prueba
+#Divide the data into train and test
 train_df = df.sample(frac=0.8, random_state=132)
 test_df = df.drop(train_df.index) 
-print(f"Tamaño Total: {len(df)}")
 
-if not os.path.exists("/home/haizeagonzalez/myproject/images"):
+if not os.path.exists(config.IMAGES_PATH):
     os.makedirs("images")
 
-# Crear carpetas si no existen
 for folder in ["train", "test"]:
     for obj_type in ["galaxy", "star"]:
         path = f"images/{folder}/{obj_type}"
         os.makedirs(path, exist_ok=True)
 
-# Función mejorada para descargar imágenes
+#Function to download the images
 def download_sdss_image(ra, dec, objID, obj_type, folder):    
     url = f"https://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg?ra={ra}&dec={dec}&scale=0.2&width=64&height=64"
     save_path = f"images/{folder}/{obj_type}/{objID}.jpg"
 
-    print(f"Downloading {objID}")  # Debugging print
+    print(f"Downloading {objID}") #Debugging print
     
     try:
         response = requests.get(url, timeout=10)
@@ -50,7 +49,7 @@ def download_sdss_image(ra, dec, objID, obj_type, folder):
 
 
 
-# Descargar imágenes para entrenamiento
+#Download images for training
 success_count = 0
 failure_count = 0
 
@@ -64,7 +63,7 @@ for _, row in train_df.iterrows():
 print(f"Total downloaded: {success_count}")
 print(f"Failed downloads: {failure_count}")
 
-# Descargar imágenes para prueba
+#Download images for testing
 for _, row in test_df.iterrows():
     obj_type = "galaxy" if row["type"] == 3 else "star"
     download_sdss_image(row["ra"], row["dec"], row["objID"], obj_type, "test")
