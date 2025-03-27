@@ -7,6 +7,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torch.utils.tensorboard import SummaryWriter
+
+writer = SummaryWriter("runs/CNNWithSE")
+
 # Bloque SE (Squeeze and Excitation)
 class SE_Block(nn.Module):
     def __init__(self, c, r=16):
@@ -73,17 +77,12 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Ajusta los valores según tu dataset
 ])
 
-train_data = datasets.ImageFolder('/home/haizeagonzalez/bigData/imagenesRecortadasTrain', transform=transform)
-val_data = datasets.ImageFolder('/home/haizeagonzalez/bigData/imagenesRecortadasTest', transform=transform)
+train_data = datasets.ImageFolder('/home/haizeagonzalez/myproject/images/train', transform=transform)
+val_data = datasets.ImageFolder('/home/haizeagonzalez/myproject/images/test', transform=transform)
 
 # Crear DataLoaders
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=32, shuffle=False)
-
-
-
-
-
 
 
 # Crear el modelo
@@ -94,9 +93,6 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Definir la función de pérdida (entropía cruzada para clasificación)
 criterion = nn.CrossEntropyLoss()
-
-
-
 
 
 
@@ -167,7 +163,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 # Número de épocas de entrenamiento
-num_epochs = 10
+num_epochs = 100
 
 # Ciclo de entrenamiento
 for epoch in range(num_epochs):
@@ -178,3 +174,10 @@ for epoch in range(num_epochs):
     # Validar
     val_loss, val_accuracy = validate(model, val_loader, criterion, device)
     print(f"Epoch [{epoch+1}/{num_epochs}], Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_accuracy:.2f}%")
+
+    writer.add_scalar("Loss/Train", train_loss, epoch)
+    writer.add_scalar("Loss/Validation", val_loss, epoch)
+    writer.add_scalar("Accuracy/Train", train_accuracy, epoch)
+    writer.add_scalar("Accuracy/Validation", val_accuracy, epoch)
+
+writer.close()
