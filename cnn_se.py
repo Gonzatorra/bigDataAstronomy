@@ -149,7 +149,8 @@ for epoch in range(epochs):
     epoch_loss_test /= len(test_loader.dataset)
     writer.add_scalar("Loss/test", epoch_loss_test, epoch)
 
+    if (epoch + 1) % 10 == 0:
     # Imprimir la pérdida media de entrenamiento y test
-    print(f"Epoch [{epoch+1}/{epochs}], Train Loss: {epoch_loss:.4f}, Test Loss: {epoch_loss_test:.4f}")
+        print(f"Epoch [{epoch+1}/{epochs}], Train Loss: {epoch_loss:.4f}, Test Loss: {epoch_loss_test:.4f}")
 
 writer.close()
