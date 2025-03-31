@@ -1,11 +1,21 @@
 import torch
 import torch.nn as nn
+import numpy as np
+import random
 import torch.nn.functional as F
-import torch.optim as optim
-import config
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
-from torch.utils.tensorboard import SummaryWriter
+import checkpoint_utils
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+set_seed(132)
 
 
 # Bloque Squeeze-and-Excitation (SE)
@@ -64,7 +74,14 @@ class CNNWithSE(nn.Module):
         return x
 
 
-def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, device, writer):
+def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, device, writer, checkpoint_path):
+    start_epoch = 0
+    # Intentar cargar un checkpoint si existe
+    try:
+        start_epoch, _ = checkpoint_utils.load_checkpoint(model, optimizer, checkpoint_path)
+    except FileNotFoundError:
+        print("No checkpoint found. Starting from zero.")
+    
     for epoch in range(epochs):
         model.train()  # Modo entrenamiento
         epoch_loss = 0.0
@@ -97,3 +114,4 @@ def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, 
 
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch+1}/{epochs}], Train Loss: {epoch_loss:.4f}, Test Loss: {epoch_loss_test:.4f}")
+            checkpoint_utils.save_checkpoint(epoch, model, optimizer, epoch_loss_test, checkpoint_path)
