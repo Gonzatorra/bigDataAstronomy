@@ -41,19 +41,18 @@ def get_hyperparameters(train_loader, validation_loader, model, optimizer, crite
 # Función Objetivo para Optuna
 def objective(trial, train_loader, validation_loader):
     # Definir espacio de búsqueda para los hiperparámetros
-    lr = trial.suggest_loguniform("lr", 1e-5, 1e-2)  # Rango de tasa de aprendizaje
-    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128])  # Tamaños de batch
-    epochs = trial.suggest_int("epochs", 10, 100)  # Número de épocas a probar
+    lr = trial.suggest_loguniform("lr", 1e-5, 1e-2)  #Different learning rates (range of values)
+    batch_size = trial.suggest_categorical("batch_size", [16, 32, 64, 128])  #Different batches size (specific values)
+    epochs = trial.suggest_int("epochs", 10, 100)  #Different amount of epochs (range of values)
 
     model = CNNWithSE(num_classes=2)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    # Definir optimizador y función de pérdida
+    #Define the optimizer and the criterion
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
 
-    # Crear el escritor para TensorBoard
     writer = SummaryWriter()
 
     # Llamar a la función de entrenamiento y validación
@@ -67,6 +66,6 @@ def objective(trial, train_loader, validation_loader):
 # Crear estudio y encontrar los mejores hiperparámetros
 def optimize_hyperparameters(train_loader, validation_loader):
     study = optuna.create_study(direction="minimize")  # Queremos minimizar la pérdida de validación
-    study.optimize(lambda trial: objective(trial, train_loader, validation_loader), n_trials=30)  # Número de pruebas de hiperparámetros
+    study.optimize(lambda trial: objective(trial, train_loader, validation_loader), n_trials=15, n_jobs=4)  # Número de pruebas de hiperparámetros
 
     return study.best_params
