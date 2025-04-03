@@ -80,7 +80,7 @@ def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, 
     try:
         start_epoch, _ = checkpoint_utils.load_checkpoint(model, optimizer, checkpoint_path)
     except FileNotFoundError:
-        print("No checkpoint found. Training from zero.")
+        print(f"No checkpoint found at {checkpoint_path}. Training from zero.")
     
     for epoch in range(epochs):
         model.train()  # Modo entrenamiento

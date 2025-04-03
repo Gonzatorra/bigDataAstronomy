@@ -18,6 +18,9 @@ def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoi
 
     for params in ParameterGrid(param_grid):
         print(f"Training with hyperparameters: {params}")
+        learning_rate_check = params["lr"]
+        batch_size_check = params["batch_size"]
+        epochs_check = params["epochs"]
 
         # Crear DataLoaders con el batch size seleccionado
         train_loader = DataLoader(train_dataset, batch_size=params["batch_size"], shuffle=True)
@@ -29,8 +32,12 @@ def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoi
         criterion = nn.CrossEntropyLoss()
         writer = SummaryWriter()
 
+        checkpoint_dir = f"{checkpoint_path}_lr_{learning_rate_check}_batch_{batch_size_check}_epochs_{epochs_check}.pth"
+        print(f"Saving checkpoint at: {checkpoint_dir}")
+
+
         # Entrenar el modelo y obtener la pérdida en validación
-        train_model(train_loader, validation_loader, model, optimizer, criterion, params["epochs"], device, writer, checkpoint_path)
+        train_model(train_loader, validation_loader, model, optimizer, criterion, params["epochs"], device, writer, checkpoint_dir)
 
         # Evaluar el modelo
         model.eval()
