@@ -1,4 +1,4 @@
-To take the data you have to enter the followuing link:
+To take the data you have to enter the following link:
 https://skyserver.sdss.org/CasJobs/SubmitJob.aspx
 
 and create this query:
@@ -18,4 +18,15 @@ WHERE type IN (3, 6, 1)
 AND clean = 1  
 AND modelMag_r BETWEEN 14 AND 22  
 AND petroRad_r > 0
+
+You have also to change the config file. There are 3 paths:
+1. DATA_PATH: Where is the csv
+2. IMAGES_PATH: Where are the images (in the jupiter notebook is explained how is the schema for the images folder)
+3. ORIGINAL_PATH: The main directory. Inside of this it has to be the DATA_PATH and the IMAGES_PATH
+
+Example:
+DATA_PATH = "/home/haizeagonzalez/bigDataProject/primaryObjs.csv"
+IMAGES_PATH = "/home/haizeagonzalez/bigDataProject/images"
+ORIGINAL_PATH = "/home/haizeagonzalez/bigDataProject"
+
 
