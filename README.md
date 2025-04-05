@@ -26,7 +26,9 @@ You have also to change the config file. There are 3 paths:
 
 Example:
 DATA_PATH = "/home/haizeagonzalez/bigDataProject/primaryObjs.csv"
+
 IMAGES_PATH = "/home/haizeagonzalez/bigDataProject/images"
+
 ORIGINAL_PATH = "/home/haizeagonzalez/bigDataProject"
 
 
