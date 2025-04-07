@@ -4,21 +4,12 @@ import numpy as np
 import random
 import torch.nn.functional as F
 import checkpoint_utils
+import set_seed
 
-def set_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-
-set_seed(132)
+set_seed.set_seed(132)
 
 
-# Bloque Squeeze-and-Excitation (SE)
+#New Squeeze-and-Excitation (SE) block
 class SELayer(nn.Module):
     def __init__(self, channel, reduction=16):
         super(SELayer, self).__init__()
@@ -36,39 +27,39 @@ class SELayer(nn.Module):
         y = self.sigmoid(y).view(b, c, 1, 1)
         return x * y
 
-# Red convolucional con bloques SE
+#CNN network with SE blocks
 class CNNWithSE(nn.Module):
-    def __init__(self, num_classes):  # 2 clases: estrellas y galaxias
+    def __init__(self, num_classes):  #2 classes: stars and galaxies
         super(CNNWithSE, self).__init__()
         
-        # Capas convolucionales
+        #Convolutional layers
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
         
-        # Bloques SE
+        #SE blocks
         self.se1 = SELayer(64)
         self.se2 = SELayer(128)
         self.se3 = SELayer(256)
 
-        # Capa totalmente conectada
-        self.fc = nn.Linear(256 * 8 * 8, num_classes)  # Después de 3 capas convolucionales y maxpooling
+        #Fully connected layer
+        self.fc = nn.Linear(256 * 8 * 8, num_classes)  #After 3 convolutional and maxpooling (see below)
 
     def forward(self, x):
-        # Pasar por las capas convolucionales
+        #Go through all the convolutional layers
         x = F.relu(self.conv1(x))
-        x = self.se1(x)  # Aplicar SE después de la primera capa
+        x = self.se1(x)  #Apply SE block to the first layer
         x = F.max_pool2d(x, 2)
 
         x = F.relu(self.conv2(x))
-        x = self.se2(x)  # Aplicar SE después de la segunda capa
+        x = self.se2(x)  #Apply SE block to the second layer
         x = F.max_pool2d(x, 2)
 
         x = F.relu(self.conv3(x))
-        x = self.se3(x)  # Aplicar SE después de la tercera capa
+        x = self.se3(x)  #Apply SE block to the third layer
         x = F.max_pool2d(x, 2)
 
-        # Aplanar las características y pasar a la capa FC
+        #Flat the characteristics and use it in de fully connected layer
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
@@ -76,17 +67,17 @@ class CNNWithSE(nn.Module):
 
 def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, device, writer, checkpoint_path):
     start_epoch = 0
-    # Intentar cargar un checkpoint si existe
+    #Load the checkpoint if there is any
     try:
         start_epoch, _ = checkpoint_utils.load_checkpoint(model, optimizer, checkpoint_path)
     except FileNotFoundError:
         print(f"No checkpoint found at {checkpoint_path}. Training from zero.")
     
     for epoch in range(epochs):
-        model.train()  # Modo entrenamiento
+        model.train()
         epoch_loss = 0.0
 
-        # Entrenamiento
+        #Training
         for images, labels in train_loader:
             images, labels = images.to(device), labels.to(device)
             optimizer.zero_grad()
@@ -99,8 +90,8 @@ def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, 
         epoch_loss /= len(train_loader.dataset)
         writer.add_scalar("Loss/train", epoch_loss, epoch)
 
-        # Evaluación en el conjunto de test
-        model.eval()  # Modo evaluación
+        #Evaluation in the test set
+        model.eval()
         epoch_loss_test = 0.0
         with torch.no_grad():
             for images, labels in test_loader:

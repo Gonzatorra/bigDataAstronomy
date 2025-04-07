@@ -7,21 +7,21 @@ import set_seed
 
 set_seed.set_seed(132)
 
-#Red neuronal CNN básica
+#CNN basic neural network
 class CNN(nn.Module):
     def __init__(self, num_classes):
         super(CNN, self).__init__()
         
-        # Capas convolucionales
+        #Convolutional layers
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
         
-        # Capa totalmente conectada
-        self.fc = nn.Linear(256 * 8 * 8, num_classes)  # Después de 3 capas convolucionales y maxpooling
+        #Fully connected layer
+        self.fc = nn.Linear(256 * 8 * 8, num_classes)  #After 3 convolutional layer and maxpooling (see below)
 
     def forward(self, x):
-        # Pasar por las capas convolucionales
+        #Go through all the convolutional layers
         x = F.relu(self.conv1(x))
         x = F.max_pool2d(x, 2)
 
@@ -31,14 +31,14 @@ class CNN(nn.Module):
         x = F.relu(self.conv3(x))
         x = F.max_pool2d(x, 2)
 
-        # Aplanar las características y pasar a la capa FC
+        #Flat the characteristics and use it in de fully connected layer
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
 
 def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, device, writer, checkpoint_path):
     start_epoch = 0
-    #If there is a checkpoint
+    #Load the checkpoint if there is any
     try:
         start_epoch, _ = checkpoint_utils.load_checkpoint(model, optimizer, checkpoint_path)
     
@@ -47,10 +47,10 @@ def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, 
 
     
     for epoch in range(start_epoch, epochs):
-        model.train()  # Modo entrenamiento
+        model.train() 
         epoch_loss = 0.0
 
-        # Entrenamiento
+        #Training
         for images, labels in train_loader:
             images, labels = images.to(device), labels.to(device)
             optimizer.zero_grad()
@@ -63,8 +63,8 @@ def train_model(train_loader, test_loader, model, optimizer, criterion, epochs, 
         epoch_loss /= len(train_loader.dataset)
         writer.add_scalar("Loss/train", epoch_loss, epoch)
 
-        # Evaluación en el conjunto de test
-        model.eval()  # Modo evaluación
+        #Evaluation in the test set
+        model.eval() 
         epoch_loss_test = 0.0
         with torch.no_grad():
             for images, labels in test_loader:

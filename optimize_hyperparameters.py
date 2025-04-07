@@ -4,9 +4,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import ParameterGrid
 from torch.utils.tensorboard import SummaryWriter
-from cnn_se import CNNWithSE, train_model  # Asegúrate de importar correctamente
+from cnn_se import CNNWithSE, train_model
 
 def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoint_path):
+    #Determine the different hyperparameters to try
     param_grid = {
         "lr": [0.01, 0.001, 0.0001],
         "batch_size": [32, 64, 128],
@@ -22,11 +23,11 @@ def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoi
         batch_size_check = params["batch_size"]
         epochs_check = params["epochs"]
 
-        # Crear DataLoaders con el batch size seleccionado
+        #Create DataLoaders with selected batch size
         train_loader = DataLoader(train_dataset, batch_size=params["batch_size"], shuffle=True)
         validation_loader = DataLoader(validation_dataset, batch_size=params["batch_size"], shuffle=False)
 
-        # Crear el modelo
+        #Create the model, optimizer and criterion
         model = CNNWithSE(num_classes=2).to(device)
         optimizer = optim.Adam(model.parameters(), lr=params["lr"])
         criterion = nn.CrossEntropyLoss()
@@ -36,10 +37,10 @@ def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoi
         print(f"Saving checkpoint at: {checkpoint_dir}")
 
 
-        # Entrenar el modelo y obtener la pérdida en validación
+        #Train the model and get the loss in the validation set. For this, the test set will be the validation set
         train_model(train_loader, validation_loader, model, optimizer, criterion, params["epochs"], device, writer, checkpoint_dir)
 
-        # Evaluar el modelo
+        #Evaluate the model
         model.eval()
         valid_loss = 0.0
         with torch.no_grad():
@@ -55,7 +56,7 @@ def optimize_hyperparameters(train_dataset, validation_dataset, device, checkpoi
 
         print(f"Validation loss: {valid_loss:.4f}")
 
-        # Guardar los mejores hiperparámetros
+        #Save the best hyperparameters, those with less loss
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             best_params = params
