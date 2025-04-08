@@ -32,3 +32,14 @@ IMAGES_PATH = "/home/haizeagonzalez/bigDataProject/images"
 ORIGINAL_PATH = "/home/haizeagonzalez/bigDataProject"
 
 
+The used libraries are:
+- pyspark
+- matplotlib
+- pandas
+- seaborn
+- numpy
+- scikit-learn (sklearn)
+- torch
+- torchvision
+- random
+- opencv
