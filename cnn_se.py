@@ -19,12 +19,18 @@ class SELayer(nn.Module):
 
     def forward(self, x):
         b, c, _, _ = x.size()
+
+        #Squeeze
         y = F.adaptive_avg_pool2d(x, 1)
+
+        #Excitation
         y = y.view(b, c)
         y = self.fc1(y)
         y = F.relu(y)
         y = self.fc2(y)
-        y = self.sigmoid(y).view(b, c, 1, 1)
+        y = self.sigmoid(y).view(b, c, 1, 1) #Get a value netween 0 and 1
+
+        #Recalibration
         return x * y
 
 #CNN network with SE blocks

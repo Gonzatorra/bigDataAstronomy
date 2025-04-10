@@ -19,7 +19,8 @@ class CNN(nn.Module):
         
         #Fully connected layer
         self.fc = nn.Linear(256 * 8 * 8, num_classes)  #After 3 convolutional layer and maxpooling (see below)
-
+        #256 because from the last convolutional layer we ger 256 channel
+        #8*8 because by each max pooling the image is reduced the half so: 64/2/2/2 = 8
     def forward(self, x):
         #Go through all the convolutional layers
         x = F.relu(self.conv1(x))
