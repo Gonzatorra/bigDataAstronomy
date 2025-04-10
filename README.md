@@ -43,3 +43,4 @@ The used libraries are:
 - torchvision
 - random
 - opencv
+- scipy
