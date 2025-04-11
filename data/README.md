@@ -4,8 +4,7 @@ DOWNLOAD DATA:
 
 2. Create a user.
 
-3. 
-and create this query:
+3. Create this query:
 SELECT objID, ra, dec, type,  
        petroRad_u, petroRad_g, petroRad_r, petroRad_i, petroRad_z,  
        modelMag_u, modelMag_g, modelMag_r, modelMag_i, modelMag_z,  
@@ -23,3 +22,5 @@ AND clean = 1
 AND modelMag_r BETWEEN 14 AND 22  
 AND petroRad_r > 0
 
+
+There is a explanation of how to do it with images in the notebook download_data.ipynb

@@ -7,6 +7,5 @@ The used libraries are:
 - scikit-learn (sklearn)
 - torch
 - torchvision
-- random
 - opencv
 - scipy
