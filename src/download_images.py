@@ -21,7 +21,7 @@ test_df = df.drop(train_df.index)
 if not os.path.exists(config.IMAGES_PATH):
     os.makedirs("images")
 
-for folder in ["train", "test"]:
+for folder in ["train", "test", "validation"]:
     for obj_type in ["galaxy", "star"]:
         path = f"images/{folder}/{obj_type}"
         os.makedirs(path, exist_ok=True)
