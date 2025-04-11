@@ -18,6 +18,10 @@ df['type'] = df['type'].astype(int)
 train_df = df.sample(frac=0.8, random_state=132)
 test_df = df.drop(train_df.index) 
 
+#Now, divide again the train and validation
+train_df = train_df.sample(frac=0.9, random_state=132)  # 90% para el entrenamiento
+val_df = train_df.drop(train_df.index)  # 10% para la validación
+
 if not os.path.exists(config.IMAGES_PATH):
     os.makedirs("images")
 
@@ -68,4 +72,10 @@ for _, row in test_df.iterrows():
     obj_type = "galaxy" if row["type"] == 3 else "star"
     download_sdss_image(row["ra"], row["dec"], row["objID"], obj_type, "test")
 
+#Download images for validation
+for _, row in val_df.iterrows():
+    obj_type = "galaxy" if row["type"] == 3 else "star"
+    download_sdss_image(row["ra"], row["dec"], row["objID"], obj_type, "test")
+
 print("All images downloaded.")
+
