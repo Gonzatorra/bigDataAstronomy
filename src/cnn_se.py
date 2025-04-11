@@ -3,7 +3,7 @@ import torch.nn as nn
 import numpy as np
 import random
 import torch.nn.functional as F
-import checkpoint_utils
+import src.checkpoint_utils as checkpoint_utils
 import set_seed
 
 set_seed.set_seed(132)
